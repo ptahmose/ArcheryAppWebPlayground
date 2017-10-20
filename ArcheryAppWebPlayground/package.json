@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "@types/jquery": "^3.2.15",
+    "jquery": "2.2.0"
+  },
+  "scripts": {
+    "postinstall": "typings install"
+  },
+  "main": "index.js",
+  "dependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
