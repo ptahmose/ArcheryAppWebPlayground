@@ -43,6 +43,14 @@ class CanvasInfo {
 class TargetCtrl {
     element: HTMLCanvasElement;
 
+    static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
+    static BlackSegment = new ColorUtils.RGB(54, 49, 53);
+    static BlueSegment = new ColorUtils.RGB(68, 173, 228);
+    static RedSegment = new ColorUtils.RGB(231, 37, 35);
+    static RedSegmentText = new ColorUtils.RGB(176, 127, 113);
+    static GoldSegment = new ColorUtils.RGB(251, 209, 3);
+    static GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
+
     constructor(element: HTMLCanvasElement) {
         this.element = element;
 
@@ -59,28 +67,63 @@ class TargetCtrl {
             new TargetSegment(1.0,
                 DefaultMarginWidth,
                 "1",
-                new ColorUtils.RGB(226, 216, 217),
+                TargetCtrl.WhiteSegment,
                 new ColorUtils.RGB(0, 0, 0),
                 new ColorUtils.RGB(0, 0, 0)),
             new TargetSegment(0.9,
                 DefaultMarginWidth,
                 "2",
-                new ColorUtils.RGB(226, 216, 217),
+                TargetCtrl.WhiteSegment,
                 new ColorUtils.RGB(0, 0, 0),
                 new ColorUtils.RGB(0, 0, 0)),
             new TargetSegment(0.8,
                 DefaultMarginWidth,
                 "3",
-                new ColorUtils.RGB(54, 49, 53),
+                TargetCtrl.BlackSegment,
                 new ColorUtils.RGB(255, 255, 255),
                 new ColorUtils.RGB(0, 0, 0)),
-
             new TargetSegment(0.7,
                 DefaultMarginWidth,
                 "4",
-                new ColorUtils.RGB(54, 49, 53),
+                TargetCtrl.BlackSegment,
                 new ColorUtils.RGB(255, 255, 255),
-                new ColorUtils.RGB(0, 0, 0))
+                new ColorUtils.RGB(0, 0, 0)),
+            new TargetSegment(0.6,
+                DefaultMarginWidth,
+                "5",
+                TargetCtrl.BlueSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                new ColorUtils.RGB(0, 56, 85)),
+            new TargetSegment(0.5,
+                DefaultMarginWidth,
+                "6",
+                TargetCtrl.BlueSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                new ColorUtils.RGB(0, 56, 85)),
+            new TargetSegment(0.4,
+                DefaultMarginWidth,
+                "7",
+                TargetCtrl.RedSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                TargetCtrl.RedSegmentText ),
+            new TargetSegment(0.3,
+                DefaultMarginWidth,
+                "8",
+                TargetCtrl.RedSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                TargetCtrl.RedSegmentText),
+            new TargetSegment(0.2,
+                DefaultMarginWidth,
+                "9",
+                TargetCtrl.GoldSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                TargetCtrl.GoldSegmentText),
+            new TargetSegment(0.1,
+                DefaultMarginWidth,
+                "10",
+                TargetCtrl.GoldSegment,
+                new ColorUtils.RGB(0, 0, 0),
+                TargetCtrl.GoldSegmentText)
         ];
     }
 
@@ -96,7 +139,7 @@ class TargetCtrl {
         var canvasInfo = new CanvasInfo(100, 100);
 
         var targetSegments = TargetCtrl.getTargetSegments();
-
+        
         targetSegments.forEach(s => {
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
             this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, s.radius-0.1, s.segmentColor);

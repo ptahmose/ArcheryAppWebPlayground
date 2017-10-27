@@ -64,10 +64,16 @@ var TargetCtrl = (function () {
     TargetCtrl.getTargetSegments = function () {
         var DefaultMarginWidth = 0.01 / 2;
         return [
-            new TargetSegment(1.0, DefaultMarginWidth, "1", new ColorUtils.RGB(226, 216, 217), new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.9, DefaultMarginWidth, "2", new ColorUtils.RGB(226, 216, 217), new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.8, DefaultMarginWidth, "3", new ColorUtils.RGB(54, 49, 53), new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.7, DefaultMarginWidth, "4", new ColorUtils.RGB(54, 49, 53), new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0))
+            new TargetSegment(1.0, DefaultMarginWidth, "1", TargetCtrl.WhiteSegment, new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 0, 0)),
+            new TargetSegment(0.9, DefaultMarginWidth, "2", TargetCtrl.WhiteSegment, new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 0, 0)),
+            new TargetSegment(0.8, DefaultMarginWidth, "3", TargetCtrl.BlackSegment, new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0)),
+            new TargetSegment(0.7, DefaultMarginWidth, "4", TargetCtrl.BlackSegment, new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0)),
+            new TargetSegment(0.6, DefaultMarginWidth, "5", TargetCtrl.BlueSegment, new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 56, 85)),
+            new TargetSegment(0.5, DefaultMarginWidth, "6", TargetCtrl.BlueSegment, new ColorUtils.RGB(0, 0, 0), new ColorUtils.RGB(0, 56, 85)),
+            new TargetSegment(0.4, DefaultMarginWidth, "7", TargetCtrl.RedSegment, new ColorUtils.RGB(0, 0, 0), TargetCtrl.RedSegmentText),
+            new TargetSegment(0.3, DefaultMarginWidth, "8", TargetCtrl.RedSegment, new ColorUtils.RGB(0, 0, 0), TargetCtrl.RedSegmentText),
+            new TargetSegment(0.2, DefaultMarginWidth, "9", TargetCtrl.GoldSegment, new ColorUtils.RGB(0, 0, 0), TargetCtrl.GoldSegmentText),
+            new TargetSegment(0.1, DefaultMarginWidth, "10", TargetCtrl.GoldSegment, new ColorUtils.RGB(0, 0, 0), TargetCtrl.GoldSegmentText)
         ];
     };
     TargetCtrl.prototype.paintTarget = function (ctx) {
@@ -105,6 +111,13 @@ var TargetCtrl = (function () {
     };
     return TargetCtrl;
 }());
+TargetCtrl.WhiteSegment = new ColorUtils.RGB(226, 216, 217);
+TargetCtrl.BlackSegment = new ColorUtils.RGB(54, 49, 53);
+TargetCtrl.BlueSegment = new ColorUtils.RGB(68, 173, 228);
+TargetCtrl.RedSegment = new ColorUtils.RGB(231, 37, 35);
+TargetCtrl.RedSegmentText = new ColorUtils.RGB(176, 127, 113);
+TargetCtrl.GoldSegment = new ColorUtils.RGB(251, 209, 3);
+TargetCtrl.GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
 window.onload = function () {
     //var el = document.getElementById('content');
     //var greeter = new Greeter(el);
