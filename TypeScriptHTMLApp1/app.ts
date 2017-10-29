@@ -42,6 +42,8 @@ class CanvasInfo {
 
 class TargetCtrl {
     element: HTMLCanvasElement;
+    canvasWidth: number;
+    canvasHeight: number;
 
     static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
     static BlackSegment = new ColorUtils.RGB(54, 49, 53);
@@ -58,73 +60,79 @@ class TargetCtrl {
 
     constructor(element: HTMLCanvasElement) {
         this.element = element;
-
+        this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
         this.paintTarget(ctx);
+
         //ctx.beginPath();
         //ctx.arc(95, 50, 40, 0, 2 * Math.PI);
         //ctx.stroke();
     }
 
+    UpdateCanvasWidthHeight(): void {
+        this.canvasWidth = this.element.width;
+        this.canvasHeight = this.element.height;
+    }
+
     static getTargetSegments(): TargetSegment[] {
-        const DefaultMarginWidth = 0.01 / 2;
+        const defaultMarginWidth: number = 0.01 / 2;
         return [
             new TargetSegment(1.0,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "1",
                 TargetCtrl.WhiteSegment,        /* Segment color */
                 TargetCtrl.Black,               /* Margin color */
                 TargetCtrl.WhiteSegmentText),   /* Text color */
             new TargetSegment(0.9,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "2",
                 TargetCtrl.WhiteSegment,
                 TargetCtrl.Black,
                 TargetCtrl.WhiteSegmentText),
             new TargetSegment(0.8,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "3",
                 TargetCtrl.BlackSegment,
                 TargetCtrl.White,
                 TargetCtrl.BlackSegmentText),
             new TargetSegment(0.7,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "4",
                 TargetCtrl.BlackSegment,
                 TargetCtrl.White,
                 TargetCtrl.BlackSegmentText),
             new TargetSegment(0.6,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "5",
                 TargetCtrl.BlueSegment,
                 TargetCtrl.Black,
                 TargetCtrl.BlueSegmentText),
             new TargetSegment(0.5,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "6",
                 TargetCtrl.BlueSegment,
                 TargetCtrl.Black,
                 TargetCtrl.BlueSegmentText),
             new TargetSegment(0.4,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "7",
                 TargetCtrl.RedSegment,
                 TargetCtrl.Black,
-                TargetCtrl.RedSegmentText ),
+                TargetCtrl.RedSegmentText),
             new TargetSegment(0.3,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "8",
                 TargetCtrl.RedSegment,
                 TargetCtrl.Black,
                 TargetCtrl.RedSegmentText),
             new TargetSegment(0.2,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "9",
                 TargetCtrl.GoldSegment,
                 TargetCtrl.Black,
                 TargetCtrl.GoldSegmentText),
             new TargetSegment(0.1,
-                DefaultMarginWidth,
+                defaultMarginWidth,
                 "10",
                 TargetCtrl.GoldSegment,
                 TargetCtrl.Black,
@@ -141,14 +149,26 @@ class TargetCtrl {
 
 
         //this.paintSegment(ctx, 60, 100, 100, 100);
-        var canvasInfo = new CanvasInfo(100, 100);
+        var canvasInfo = new CanvasInfo(this.canvasWidth, this.canvasHeight);
 
         var targetSegments = TargetCtrl.getTargetSegments();
-        
-        targetSegments.forEach(s => {
+
+        for (var i = 0; i < targetSegments.length; ++i) {
+            var s = targetSegments[i];
+            var segmentEndRadius: number;
+            if (i < targetSegments.length - 1) {
+                segmentEndRadius = targetSegments[i + 1].radius;
+            } else {
+                segmentEndRadius = 0;
+            }
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
-            this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, s.radius-0.1, s.segmentColor);
-        });
+            this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
+        }
+
+        //targetSegments.forEach(s => {
+        //    this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
+        //    this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
+        //});
 
 
         //        this.paintSegmentTs(ctx, canvasInfo, 0.5, 0.6, ColorUtils.ColorHelper.hexToRgb('#f00000'));
