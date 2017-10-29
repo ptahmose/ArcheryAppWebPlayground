@@ -64,12 +64,12 @@ var TargetCtrl = (function () {
     TargetCtrl.getTargetSegments = function () {
         var DefaultMarginWidth = 0.01 / 2;
         return [
-            new TargetSegment(1.0, DefaultMarginWidth, "1", TargetCtrl.WhiteSegment, TargetCtrl.Black, new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.9, DefaultMarginWidth, "2", TargetCtrl.WhiteSegment, TargetCtrl.Black, new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.8, DefaultMarginWidth, "3", TargetCtrl.BlackSegment, new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.7, DefaultMarginWidth, "4", TargetCtrl.BlackSegment, new ColorUtils.RGB(255, 255, 255), new ColorUtils.RGB(0, 0, 0)),
-            new TargetSegment(0.6, DefaultMarginWidth, "5", TargetCtrl.BlueSegment, TargetCtrl.Black, new ColorUtils.RGB(0, 56, 85)),
-            new TargetSegment(0.5, DefaultMarginWidth, "6", TargetCtrl.BlueSegment, TargetCtrl.Black, new ColorUtils.RGB(0, 56, 85)),
+            new TargetSegment(1.0, DefaultMarginWidth, "1", TargetCtrl.WhiteSegment, /* Segment color */ TargetCtrl.Black, /* Margin color */ TargetCtrl.WhiteSegmentText),
+            new TargetSegment(0.9, DefaultMarginWidth, "2", TargetCtrl.WhiteSegment, TargetCtrl.Black, TargetCtrl.WhiteSegmentText),
+            new TargetSegment(0.8, DefaultMarginWidth, "3", TargetCtrl.BlackSegment, TargetCtrl.White, TargetCtrl.BlackSegmentText),
+            new TargetSegment(0.7, DefaultMarginWidth, "4", TargetCtrl.BlackSegment, TargetCtrl.White, TargetCtrl.BlackSegmentText),
+            new TargetSegment(0.6, DefaultMarginWidth, "5", TargetCtrl.BlueSegment, TargetCtrl.Black, TargetCtrl.BlueSegmentText),
+            new TargetSegment(0.5, DefaultMarginWidth, "6", TargetCtrl.BlueSegment, TargetCtrl.Black, TargetCtrl.BlueSegmentText),
             new TargetSegment(0.4, DefaultMarginWidth, "7", TargetCtrl.RedSegment, TargetCtrl.Black, TargetCtrl.RedSegmentText),
             new TargetSegment(0.3, DefaultMarginWidth, "8", TargetCtrl.RedSegment, TargetCtrl.Black, TargetCtrl.RedSegmentText),
             new TargetSegment(0.2, DefaultMarginWidth, "9", TargetCtrl.GoldSegment, TargetCtrl.Black, TargetCtrl.GoldSegmentText),
@@ -118,7 +118,11 @@ TargetCtrl.RedSegment = new ColorUtils.RGB(231, 37, 35);
 TargetCtrl.RedSegmentText = new ColorUtils.RGB(176, 127, 113);
 TargetCtrl.GoldSegment = new ColorUtils.RGB(251, 209, 3);
 TargetCtrl.GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
+TargetCtrl.WhiteSegmentText = new ColorUtils.RGB(111, 106, 103);
+TargetCtrl.BlackSegmentText = new ColorUtils.RGB(181, 177, 174);
+TargetCtrl.BlueSegmentText = new ColorUtils.RGB(0, 56, 85);
 TargetCtrl.Black = new ColorUtils.RGB(0, 0, 0);
+TargetCtrl.White = new ColorUtils.RGB(255, 255, 255);
 window.onload = function () {
     //var el = document.getElementById('content');
     //var greeter = new Greeter(el);

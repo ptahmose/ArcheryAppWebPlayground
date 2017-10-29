@@ -50,7 +50,11 @@ class TargetCtrl {
     static RedSegmentText = new ColorUtils.RGB(176, 127, 113);
     static GoldSegment = new ColorUtils.RGB(251, 209, 3);
     static GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
+    static WhiteSegmentText = new ColorUtils.RGB(111, 106, 103);
+    static BlackSegmentText = new ColorUtils.RGB(181, 177, 174);
+    static BlueSegmentText = new ColorUtils.RGB(0, 56, 85);
     static Black = new ColorUtils.RGB(0, 0, 0);
+    static White = new ColorUtils.RGB(255, 255, 255);
 
     constructor(element: HTMLCanvasElement) {
         this.element = element;
@@ -68,39 +72,39 @@ class TargetCtrl {
             new TargetSegment(1.0,
                 DefaultMarginWidth,
                 "1",
-                TargetCtrl.WhiteSegment,
-                TargetCtrl.Black,
-                new ColorUtils.RGB(0, 0, 0)),
+                TargetCtrl.WhiteSegment,        /* Segment color */
+                TargetCtrl.Black,               /* Margin color */
+                TargetCtrl.WhiteSegmentText),   /* Text color */
             new TargetSegment(0.9,
                 DefaultMarginWidth,
                 "2",
                 TargetCtrl.WhiteSegment,
                 TargetCtrl.Black,
-                new ColorUtils.RGB(0, 0, 0)),
+                TargetCtrl.WhiteSegmentText),
             new TargetSegment(0.8,
                 DefaultMarginWidth,
                 "3",
                 TargetCtrl.BlackSegment,
-                new ColorUtils.RGB(255, 255, 255),
-                new ColorUtils.RGB(0, 0, 0)),
+                TargetCtrl.White,
+                TargetCtrl.BlackSegmentText),
             new TargetSegment(0.7,
                 DefaultMarginWidth,
                 "4",
                 TargetCtrl.BlackSegment,
-                new ColorUtils.RGB(255, 255, 255),
-                new ColorUtils.RGB(0, 0, 0)),
+                TargetCtrl.White,
+                TargetCtrl.BlackSegmentText),
             new TargetSegment(0.6,
                 DefaultMarginWidth,
                 "5",
                 TargetCtrl.BlueSegment,
                 TargetCtrl.Black,
-                new ColorUtils.RGB(0, 56, 85)),
+                TargetCtrl.BlueSegmentText),
             new TargetSegment(0.5,
                 DefaultMarginWidth,
                 "6",
                 TargetCtrl.BlueSegment,
                 TargetCtrl.Black,
-                new ColorUtils.RGB(0, 56, 85)),
+                TargetCtrl.BlueSegmentText),
             new TargetSegment(0.4,
                 DefaultMarginWidth,
                 "7",
