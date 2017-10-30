@@ -60,6 +60,7 @@ class TargetCtrl {
 
     constructor(element: HTMLCanvasElement) {
         this.element = element;
+        this.setupEvents();
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
         this.paintTarget(ctx);
@@ -67,6 +68,15 @@ class TargetCtrl {
         //ctx.beginPath();
         //ctx.arc(95, 50, 40, 0, 2 * Math.PI);
         //ctx.stroke();
+    }
+
+    setupEvents(): void {
+        //this.element.onmousedown((ev: MouseEvent) =>  this.OnMouseDown(ev) );
+        this.element.onmousedown = (ev: MouseEvent)=> { this.OnMouseDown(ev); };
+    }
+
+    OnMouseDown(ev: MouseEvent): void {
+        return;
     }
 
     UpdateCanvasWidthHeight(): void {
@@ -164,14 +174,6 @@ class TargetCtrl {
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
             this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
         }
-
-        //targetSegments.forEach(s => {
-        //    this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
-        //    this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
-        //});
-
-
-        //        this.paintSegmentTs(ctx, canvasInfo, 0.5, 0.6, ColorUtils.ColorHelper.hexToRgb('#f00000'));
     }
 
     paintSegment(ctx: CanvasRenderingContext2D, startRadius: number, endRadius: number, centerX: number, centerY: number): void {

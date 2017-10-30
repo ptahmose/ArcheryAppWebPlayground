@@ -55,6 +55,7 @@ var CanvasInfo = (function () {
 var TargetCtrl = (function () {
     function TargetCtrl(element) {
         this.element = element;
+        this.setupEvents();
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
         this.paintTarget(ctx);
@@ -62,6 +63,14 @@ var TargetCtrl = (function () {
         //ctx.arc(95, 50, 40, 0, 2 * Math.PI);
         //ctx.stroke();
     }
+    TargetCtrl.prototype.setupEvents = function () {
+        var _this = this;
+        //this.element.onmousedown((ev: MouseEvent) =>  this.OnMouseDown(ev) );
+        this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
+    };
+    TargetCtrl.prototype.OnMouseDown = function (ev) {
+        return;
+    };
     TargetCtrl.prototype.UpdateCanvasWidthHeight = function () {
         this.canvasWidth = this.element.width;
         this.canvasHeight = this.element.height;
@@ -102,11 +111,6 @@ var TargetCtrl = (function () {
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
             this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
         }
-        //targetSegments.forEach(s => {
-        //    this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
-        //    this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
-        //});
-        //        this.paintSegmentTs(ctx, canvasInfo, 0.5, 0.6, ColorUtils.ColorHelper.hexToRgb('#f00000'));
     };
     TargetCtrl.prototype.paintSegment = function (ctx, startRadius, endRadius, centerX, centerY) {
         var middle = (endRadius + startRadius) / 2;
