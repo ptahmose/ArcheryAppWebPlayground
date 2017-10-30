@@ -63,6 +63,9 @@ class TargetCtrl {
         this.setupEvents();
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
+
+        ctx.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
+
         this.paintTarget(ctx);
 
         //ctx.beginPath();
@@ -72,10 +75,13 @@ class TargetCtrl {
 
     setupEvents(): void {
         //this.element.onmousedown((ev: MouseEvent) =>  this.OnMouseDown(ev) );
-        this.element.onmousedown = (ev: MouseEvent)=> { this.OnMouseDown(ev); };
+        this.element.onmousedown = (ev: MouseEvent) => { this.OnMouseDown(ev); };
     }
 
     OnMouseDown(ev: MouseEvent): void {
+        var ctx = this.element.getContext("2d");
+        ctx.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -this.canvasWidth / 2, -this.canvasHeight / 2);
+        this.paintTarget(ctx);
         return;
     }
 
@@ -159,7 +165,9 @@ class TargetCtrl {
 
 
         //this.paintSegment(ctx, 60, 100, 100, 100);
-        var canvasInfo = new CanvasInfo(this.canvasWidth, this.canvasHeight);
+        //var canvasInfo = new CanvasInfo(this.canvasWidth, this.canvasHeight);
+
+        var canvasInfo = new CanvasInfo(1, 1);
 
         var targetSegments = TargetCtrl.getTargetSegments();
 

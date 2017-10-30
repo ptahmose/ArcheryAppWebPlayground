@@ -58,6 +58,7 @@ var TargetCtrl = (function () {
         this.setupEvents();
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
+        ctx.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
         this.paintTarget(ctx);
         //ctx.beginPath();
         //ctx.arc(95, 50, 40, 0, 2 * Math.PI);
@@ -69,6 +70,9 @@ var TargetCtrl = (function () {
         this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
     };
     TargetCtrl.prototype.OnMouseDown = function (ev) {
+        var ctx = this.element.getContext("2d");
+        ctx.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -this.canvasWidth / 2, -this.canvasHeight / 2);
+        this.paintTarget(ctx);
         return;
     };
     TargetCtrl.prototype.UpdateCanvasWidthHeight = function () {
@@ -97,7 +101,8 @@ var TargetCtrl = (function () {
         //ctx.lineWidth = 20;
         //ctx.stroke();
         //this.paintSegment(ctx, 60, 100, 100, 100);
-        var canvasInfo = new CanvasInfo(this.canvasWidth, this.canvasHeight);
+        //var canvasInfo = new CanvasInfo(this.canvasWidth, this.canvasHeight);
+        var canvasInfo = new CanvasInfo(1, 1);
         var targetSegments = TargetCtrl.getTargetSegments();
         for (var i = 0; i < targetSegments.length; ++i) {
             var s = targetSegments[i];
