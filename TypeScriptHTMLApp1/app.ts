@@ -1,4 +1,6 @@
-﻿class Greeter {
+﻿declare var $: any;
+
+class Greeter {
     element: HTMLElement;
     span: HTMLElement;
     timerToken: number;
@@ -45,6 +47,8 @@ class TargetCtrl {
     canvasWidth: number;
     canvasHeight: number;
 
+    backupElement: HTMLCanvasElement;
+
     static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
     static BlackSegment = new ColorUtils.RGB(54, 49, 53);
     static BlueSegment = new ColorUtils.RGB(68, 173, 228);
@@ -64,9 +68,44 @@ class TargetCtrl {
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
 
-        ctx.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
 
+        ctx.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
         this.paintTarget(ctx);
+        ctx.setTransform(1,0,0,1,0,0);
+
+        this.backupElement = document.createElement("canvas");
+        this.backupElement.width = this.canvasWidth;
+        this.backupElement.height = this.canvasHeight;
+        var ctxBackup = this.backupElement.getContext("2d");
+        ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
+
+
+        //var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
+        //var ctx2 = el2.getContext("2d");
+        //ctx2.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
+
+
+        /*
+        this.backupElement = document.createElement("canvas");
+        this.backupElement.width = this.canvasWidth;
+        this.backupElement.height = this.canvasHeight;
+        var ctxBackup = this.backupElement.getContext("2d");
+        ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
+
+
+        var memCanvas = document.createElement("canvas");
+        memCanvas.width = this.canvasWidth;
+        memCanvas.height = this.canvasHeight;
+        var ctxMemCanvas = memCanvas.getContext("2d");
+        ctxMemCanvas.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
+        this.paintTarget(ctxMemCanvas);
+
+        //ctx.drawImage(memCanvas, 0, 0, this.canvasWidth, this.canvasHeight);
+        ctx.drawImage(memCanvas,this.canvasWidth / 4, this.canvasHeight / 4, this.canvasWidth / 2, this.canvasHeight / 2, 0, 0, this.canvasWidth, this.canvasHeight);
+        this.backupElement = memCanvas;
+        */
+        /*ctx.setTransform(this.canvasWidth, 0, 0, this.canvasHeight, 0, 0);
+        this.paintTarget(ctx);*/
 
         //ctx.beginPath();
         //ctx.arc(95, 50, 40, 0, 2 * Math.PI);
@@ -79,9 +118,41 @@ class TargetCtrl {
     }
 
     OnMouseDown(ev: MouseEvent): void {
+
+        $({ xyz: 1 }).animate({ xyz: 0.1 }, { duration:5000,step:(now,fx)=> {
+            console.log("anim now " + now);
+            var ctx = this.element.getContext("2d");
+            var w = this.canvasWidth * now;
+            var h = this.canvasHeight * now;
+            ctx.drawImage(this.backupElement, (this.canvasWidth -w)/2, (this.canvasHeight-h) / 2, w, h, 0, 0, this.canvasWidth, this.canvasHeight);
+        }});
+
+/*
         var ctx = this.element.getContext("2d");
-        ctx.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -this.canvasWidth / 2, -this.canvasHeight / 2);
-        this.paintTarget(ctx);
+        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        ctx.drawImage(this.backupElement, this.canvasWidth / 4, this.canvasHeight / 4, this.canvasWidth / 2, this.canvasHeight / 2, 0, 0, this.canvasWidth, this.canvasHeight);
+
+        var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
+        var ctx2 = el2.getContext("2d");
+        //ctx2.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
+        ctx2.drawImage(this.backupElement, this.canvasWidth / 4, this.canvasHeight / 4, this.canvasWidth / 2, this.canvasHeight / 2, 0, 0, this.canvasWidth, this.canvasHeight);
+*/
+
+/*
+
+
+
+
+
+
+        var ctx = this.element.getContext("2d");
+        ctx.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+        //var ctxBackup = this.backupElement.getContext("2d");
+        //ctx.drawImage(this.backupElement, this.canvasWidth/4,this.canvasHeight/4,this.canvasWidth/2,this.canvasHeight/2,0,0,this.canvasWidth,this.canvasHeight);
+        ctx.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
+        //ctx.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -this.canvasWidth / 2, -this.canvasHeight / 2);
+        //this.paintTarget(ctx);
+*/
         return;
     }
 
@@ -209,5 +280,8 @@ window.onload = () => {
     //var greeter = new Greeter(el);
     //greeter.start();
     var el = <HTMLCanvasElement>document.getElementById('myCanvas');
+
+    //var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
+
     var greeter = new TargetCtrl(el);
 };
