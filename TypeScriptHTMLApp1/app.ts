@@ -1,5 +1,8 @@
 ﻿declare var $: any;
 
+//import $ from 'jquery'
+//import $ = require("jquery");
+
 class Greeter {
     element: HTMLElement;
     span: HTMLElement;
@@ -63,6 +66,8 @@ class TargetCtrl {
     static White = new ColorUtils.RGB(255, 255, 255);
 
     constructor(element: HTMLCanvasElement) {
+        this.curZoom = 1;
+
         this.element = element;
         this.setupEvents();
         this.UpdateCanvasWidthHeight();
@@ -82,6 +87,7 @@ class TargetCtrl {
 
     setupEvents(): void {
         this.element.onmousedown = (ev: MouseEvent) => { this.OnMouseDown(ev); };
+        this.element.onmouseup = (ev: MouseEvent) => { this.OnMouseUp(ev); }
     }
 
     setTransform(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, zoom: number): void {
@@ -97,7 +103,7 @@ class TargetCtrl {
         // and now we need to translate (xP,yP) to the center
         var xDiff = xP - centerX;
         var yDiff = yP - centerY;
-                                                                                                            
+
         xDiff -= distX * zoom;
         yDiff -= distY * zoom;
 
@@ -112,13 +118,28 @@ class TargetCtrl {
         };
     }
 
+    curZoom: number;
+    zoomAnimation:any;
+
     OnMouseDown(ev: MouseEvent): void {
-        this.runZoomInAnimation(ev,1, 0.1);
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        this.runZoomInAnimation(ev, this.curZoom, 0.1);
     }
 
-    private runZoomInAnimation(ev: MouseEvent,startZoom: number, endZoom: number): void {
+    OnMouseUp(ev: MouseEvent): void {
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+
+        this.runZoomInAnimation(ev,this.curZoom,1);
+    }
+
+    private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
         var pos = this.getMousePos(this.element, ev);
-        $({ xyz: startZoom }).animate(
+        this.zoomAnimation = $({ xyz: startZoom });
+        /*$({ xyz: startZoom })*/this.zoomAnimation.animate(
             { xyz: endZoom },
             {
                 duration: 350,
@@ -127,10 +148,13 @@ class TargetCtrl {
                     var ctx = this.element.getContext("2d");
                     this.setTransform(ctx, pos.x, pos.y, now);
                     ctx.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
+                    this.curZoom = now;
                 },
                 complete: (now, fx) => {
                     var ctx = this.element.getContext("2d");
                     this.drawZoomed(ctx, pos.x, pos.y, endZoom);
+                    this.curZoom = endZoom;
+                    this.zoomAnimation = null;
                 }
             });
     }

@@ -1,11 +1,12 @@
 ﻿{
   "compilerOptions": {
-    "module": "es2015",
+    "module": "none",
     "allowJs": true,
     "outDir": "out",
     "target": "es5",
     "sourceMap": true
   },
+  "enableAutoDiscovery": true,
   "exclude": [
     "node_modules",
     "wwwroot",
@@ -13,7 +14,9 @@
   ],
   "compileOnSave": true,
   "typeAcquisition": {
-    "enable": true
+    "enable": true,
+    "include": [ "jquery" ]
+
   },
   "files": [
     "app.ts",

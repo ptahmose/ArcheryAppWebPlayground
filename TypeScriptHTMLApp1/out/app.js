@@ -1,3 +1,5 @@
+//import $ from 'jquery'
+//import $ = require("jquery");
 var Greeter = (function () {
     function Greeter(element) {
         this.element = element;
@@ -54,6 +56,7 @@ var CanvasInfo = (function () {
 }());
 var TargetCtrl = (function () {
     function TargetCtrl(element) {
+        this.curZoom = 1;
         this.element = element;
         this.setupEvents();
         this.UpdateCanvasWidthHeight();
@@ -70,6 +73,7 @@ var TargetCtrl = (function () {
     TargetCtrl.prototype.setupEvents = function () {
         var _this = this;
         this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
+        this.element.onmouseup = function (ev) { _this.OnMouseUp(ev); };
     };
     TargetCtrl.prototype.setTransform = function (ctx, centerX, centerY, zoom) {
         zoom = 1 / zoom;
@@ -93,22 +97,35 @@ var TargetCtrl = (function () {
         };
     };
     TargetCtrl.prototype.OnMouseDown = function (ev) {
-        this.runZoomInAnimation(ev, 1, 0.1);
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        this.runZoomInAnimation(ev, this.curZoom, 0.1);
+    };
+    TargetCtrl.prototype.OnMouseUp = function (ev) {
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        this.runZoomInAnimation(ev, this.curZoom, 1);
     };
     TargetCtrl.prototype.runZoomInAnimation = function (ev, startZoom, endZoom) {
         var _this = this;
         var pos = this.getMousePos(this.element, ev);
-        $({ xyz: startZoom }).animate({ xyz: endZoom }, {
+        this.zoomAnimation = $({ xyz: startZoom });
+        /*$({ xyz: startZoom })*/ this.zoomAnimation.animate({ xyz: endZoom }, {
             duration: 350,
             step: function (now, fx) {
                 console.log("anim now " + now);
                 var ctx = _this.element.getContext("2d");
                 _this.setTransform(ctx, pos.x, pos.y, now);
                 ctx.drawImage(_this.backupElement, 0, 0, _this.canvasWidth, _this.canvasHeight);
+                _this.curZoom = now;
             },
             complete: function (now, fx) {
                 var ctx = _this.element.getContext("2d");
                 _this.drawZoomed(ctx, pos.x, pos.y, endZoom);
+                _this.curZoom = endZoom;
+                _this.zoomAnimation = null;
             }
         });
     };
