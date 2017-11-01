@@ -1,0 +1,22 @@
+﻿{
+  "compilerOptions": {
+    "module": "es2015",
+    "allowJs": true,
+    "outDir": "out",
+    "target": "es5",
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot",
+    "out"
+  ],
+  "compileOnSave": true,
+  "typeAcquisition": {
+    "enable": true
+  },
+  "files": [
+    "app.ts",
+    "color-util.ts"
+  ]
+}

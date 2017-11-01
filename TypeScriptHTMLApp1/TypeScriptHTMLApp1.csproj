@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="lib\jquery\dist\jquery.min.map" />
+    <Content Include="tsconfig.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
