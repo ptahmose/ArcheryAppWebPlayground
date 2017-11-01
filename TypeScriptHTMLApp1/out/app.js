@@ -176,33 +176,37 @@ var TargetCtrl = (function () {
         return;
     };
     TargetCtrl.prototype.drawZoomed = function (ctx, centerX, centerY, zoom) {
-        var el2 = document.getElementById('myCanvas2');
-        var ctx2 = el2.getContext("2d");
-        //ctx2.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom , centerX/zoom , centerY /zoom);
-        var xoffset = -275.0;
-        var xOffset = -2 * (this.canvasWidth / 2 - centerX);
-        var yOffset = -2 * (this.canvasHeight / 2 - centerY);
-        ctx2.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -xOffset, -yOffset);
-        //zoom = 1 / zoom;
-        //var w = this.canvasWidth * zoom;
-        //var h = this.canvasHeight * zoom;
-        //var xP = w / 2;
-        //var yP = h / 2;
-        //var xDiff = xP - centerX;//this.canvasWidth / 2;
-        //var yDiff = yP - centerY;//this.canvasHeight/ 2;
-        //xDiff *= this.canvasWidth;
-        //yDiff *= this.canvasHeight;
-        //var aa = (centerX/this.canvasWidth)
-        var xDiff = centerX * 10 - centerX; //400;
-        var yDiff = centerY * 10 - centerY; // 400;
-        /* xDiff += (this.canvasWidth/2)*zoom;*/
-        ctx2.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom, -xDiff, -yDiff);
-        //this.setTransform(ctx2, centerX/*this.canvasWidth / 2*/, centerY/* this.canvasHeight / 2*/, zoom);
-        this.paintTarget(ctx2);
-        //var ctxBackup = this.backupElement.getContext("2d");
-        //this.setTransform(ctx2, centerX, centerY, zoom);
+        var xDiff = centerX / zoom - centerX; //400;
+        var yDiff = centerY / zoom - centerY; // 400;
+        ctx.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom, -xDiff, -yDiff);
+        this.paintTarget(ctx);
+        //var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
+        //var ctx2 = el2.getContext("2d");
+        ////ctx2.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom , centerX/zoom , centerY /zoom);
+        //var xoffset = -275.0;
+        //var xOffset = -2 * (this.canvasWidth / 2 - centerX);
+        //var yOffset = -2 * (this.canvasHeight / 2 - centerY);
+        //ctx2.setTransform(this.canvasWidth * 2, 0, 0, this.canvasHeight * 2, -xOffset, -yOffset);
+        ////zoom = 1 / zoom;
+        ////var w = this.canvasWidth * zoom;
+        ////var h = this.canvasHeight * zoom;
+        ////var xP = w / 2;
+        ////var yP = h / 2;
+        ////var xDiff = xP - centerX;//this.canvasWidth / 2;
+        ////var yDiff = yP - centerY;//this.canvasHeight/ 2;
+        ////xDiff *= this.canvasWidth;
+        ////yDiff *= this.canvasHeight;
+        ////var aa = (centerX/this.canvasWidth)
+        //var xDiff = centerX / zoom - centerX;//400;
+        //var yDiff = centerY / zoom - centerY;// 400;
+        ///* xDiff += (this.canvasWidth/2)*zoom;*/
+        //ctx2.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom, -xDiff, -yDiff);
+        ////this.setTransform(ctx2, centerX/*this.canvasWidth / 2*/, centerY/* this.canvasHeight / 2*/, zoom);
         //this.paintTarget(ctx2);
-        //ctx2.drawImage(el2, 0, 0, this.canvasWidth, this.canvasHeight);
+        ////var ctxBackup = this.backupElement.getContext("2d");
+        ////this.setTransform(ctx2, centerX, centerY, zoom);
+        ////this.paintTarget(ctx2);
+        ////ctx2.drawImage(el2, 0, 0, this.canvasWidth, this.canvasHeight);
     };
     TargetCtrl.prototype.UpdateCanvasWidthHeight = function () {
         this.canvasWidth = this.element.width;
