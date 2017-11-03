@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>TypeScript HTML App</title>
     <link rel="stylesheet" href="app.css" type="text/css" />
-    <!--<script src="lib/jquery/dist/jquery.js"></script>-->    
+    <!--<script src="lib/jquery/dist/jquery.js"></script>-->
     <script src="lib/jquery/dist/jquery-3.2.1.min.js"></script>
     <script src="out/color-util.js"></script>
     <script src="out/app.js"></script>
@@ -14,9 +14,22 @@
     <h1>TypeScript HTML App.</h1>
 
     <div id="content"></div>
-
+    
+    
+    
+<!--https://robertnyman.com/2010/03/22/css-pointer-events-to-allow-clicks-on-underlying-elements/-->
+<!--https://stackoverflow.com/questions/24041111/can-i-place-a-svg-image-element-on-top-a-canvas-element-->
+<div style="position: relative;">
     <canvas id="myCanvas" width="1024" height="1024"></canvas>
-       
-    <canvas id="myCanvas2" width="800" height="800"></canvas>
+
+    <!--<canvas id="myCanvas2" width="800" height="800"></canvas>-->
+
+    <svg id="mySvg" width="1024" height="1024" style="position: absolute;left: 0px; top:0px;z-index: 2;width: 300px;pointer-events: none;">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+    </svg>
+</div>
+
+
+
 </body>
 </html>

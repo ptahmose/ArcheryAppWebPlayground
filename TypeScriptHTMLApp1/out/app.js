@@ -115,7 +115,7 @@ var TargetCtrl = (function () {
         /*$({ xyz: startZoom })*/ this.zoomAnimation.animate({ xyz: endZoom }, {
             duration: 350,
             step: function (now, fx) {
-                console.log("anim now " + now);
+                //console.log("anim now " + now);
                 var ctx = _this.element.getContext("2d");
                 _this.setTransform(ctx, pos.x, pos.y, now);
                 ctx.drawImage(_this.backupElement, 0, 0, _this.canvasWidth, _this.canvasHeight);
@@ -130,8 +130,8 @@ var TargetCtrl = (function () {
         });
     };
     TargetCtrl.prototype.drawZoomed = function (ctx, centerX, centerY, zoom) {
-        var xDiff = centerX / zoom - centerX; //400;
-        var yDiff = centerY / zoom - centerY; // 400;
+        var xDiff = centerX / zoom - centerX;
+        var yDiff = centerY / zoom - centerY;
         ctx.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom, -xDiff, -yDiff);
         this.paintTarget(ctx);
     };
@@ -169,6 +169,13 @@ var TargetCtrl = (function () {
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
             this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
         }
+        /*
+        var img = new Image();
+        img.src = "http://upload.wikimedia.org/wikipedia/commons/d/d2/Svg_example_square.svg";
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+        }
+        */
     };
     TargetCtrl.prototype.paintSegment = function (ctx, startRadius, endRadius, centerX, centerY) {
         var middle = (endRadius + startRadius) / 2;

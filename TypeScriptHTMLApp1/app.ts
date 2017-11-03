@@ -118,8 +118,8 @@ class TargetCtrl {
         };
     }
 
-    curZoom: number;
-    zoomAnimation:any;
+    private curZoom: number;
+    private zoomAnimation:any;
 
     OnMouseDown(ev: MouseEvent): void {
         if (this.zoomAnimation != null) {
@@ -144,7 +144,7 @@ class TargetCtrl {
             {
                 duration: 350,
                 step: (now, fx) => {
-                    console.log("anim now " + now);
+                    //console.log("anim now " + now);
                     var ctx = this.element.getContext("2d");
                     this.setTransform(ctx, pos.x, pos.y, now);
                     ctx.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -160,8 +160,8 @@ class TargetCtrl {
     }
 
     drawZoomed(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, zoom: number): void {
-        var xDiff = centerX / zoom - centerX;//400;
-        var yDiff = centerY / zoom - centerY;// 400;
+        var xDiff = centerX / zoom - centerX;
+        var yDiff = centerY / zoom - centerY;
         ctx.setTransform(this.canvasWidth / zoom, 0, 0, this.canvasHeight / zoom, -xDiff, -yDiff);
         this.paintTarget(ctx);
     }
@@ -253,6 +253,14 @@ class TargetCtrl {
             this.paintSegmentTs(ctx, canvasInfo, s.radius, s.radius - s.marginWidth, s.marginColor);
             this.paintSegmentTs(ctx, canvasInfo, s.radius - s.marginWidth, segmentEndRadius, s.segmentColor);
         }
+
+        /*
+        var img = new Image();
+        img.src = "http://upload.wikimedia.org/wikipedia/commons/d/d2/Svg_example_square.svg";
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+        }
+        */
     }
 
     paintSegment(ctx: CanvasRenderingContext2D, startRadius: number, endRadius: number, centerX: number, centerY: number): void {
