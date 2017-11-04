@@ -53,6 +53,8 @@ class TargetCtrl {
 
     backupElement: HTMLCanvasElement;
 
+    hitGroup: SVGGElement;
+
     static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
     static BlackSegment = new ColorUtils.RGB(54, 49, 53);
     static BlueSegment = new ColorUtils.RGB(68, 173, 228);
@@ -89,15 +91,27 @@ class TargetCtrl {
         this.drawHits();
     }
 
+    private insertHitsGroup(): void {
+        var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+        group.setAttribute('transform', 'scale(1024,1024)');
+
+        var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
+        hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
+        hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
+        group.appendChild(hit);
+        this.svgElement.appendChild(group);
+    }
+
     private drawHits(): void {
-        var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-        circleElement.setAttribute('cx', "200");
-        circleElement.setAttribute('cy', "200");
-        circleElement.setAttribute('r', "40");
-        circleElement.setAttribute('stroke', "green");
-        circleElement.setAttribute('stroke-width', "4");
-        circleElement.setAttribute('fill', "yellow");
-        this.svgElement.appendChild(circleElement);
+        this.insertHitsGroup();
+        //var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+        //circleElement.setAttribute('cx', "200");
+        //circleElement.setAttribute('cy', "200");
+        //circleElement.setAttribute('r', "40");
+        //circleElement.setAttribute('stroke', "green");
+        //circleElement.setAttribute('stroke-width', "4");
+        //circleElement.setAttribute('fill', "yellow");
+        //this.svgElement.appendChild(circleElement);
     }
 
     setupEvents(): void {
