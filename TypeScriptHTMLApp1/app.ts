@@ -49,6 +49,7 @@ class TargetCtrl {
     element: HTMLCanvasElement;
     canvasWidth: number;
     canvasHeight: number;
+    svgElement:SVGSVGElement;
 
     backupElement: HTMLCanvasElement;
 
@@ -65,10 +66,11 @@ class TargetCtrl {
     static Black = new ColorUtils.RGB(0, 0, 0);
     static White = new ColorUtils.RGB(255, 255, 255);
 
-    constructor(element: HTMLCanvasElement) {
+    constructor(element: HTMLCanvasElement, svg: SVGSVGElement) {
         this.curZoom = 1;
 
         this.element = element;
+        this.svgElement = svg;
         this.setupEvents();
         this.UpdateCanvasWidthHeight();
         var ctx = this.element.getContext("2d");
@@ -83,6 +85,19 @@ class TargetCtrl {
         this.backupElement.height = this.canvasHeight;
         var ctxBackup = this.backupElement.getContext("2d");
         ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
+
+        this.drawHits();
+    }
+
+    private drawHits(): void {
+        var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+        circleElement.setAttribute('cx', "200");
+        circleElement.setAttribute('cy', "200");
+        circleElement.setAttribute('r', "40");
+        circleElement.setAttribute('stroke', "green");
+        circleElement.setAttribute('stroke-width', "4");
+        circleElement.setAttribute('fill', "yellow");
+        this.svgElement.appendChild(circleElement);
     }
 
     setupEvents(): void {
@@ -119,7 +134,7 @@ class TargetCtrl {
     }
 
     private curZoom: number;
-    private zoomAnimation:any;
+    private zoomAnimation: any;
 
     OnMouseDown(ev: MouseEvent): void {
         if (this.zoomAnimation != null) {
@@ -133,7 +148,7 @@ class TargetCtrl {
             this.zoomAnimation.stop();
         }
 
-        this.runZoomInAnimation(ev,this.curZoom,1);
+        this.runZoomInAnimation(ev, this.curZoom, 1);
     }
 
     private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
@@ -287,9 +302,10 @@ window.onload = () => {
     //var el = document.getElementById('content');
     //var greeter = new Greeter(el);
     //greeter.start();
-    var el = <HTMLCanvasElement>document.getElementById('myCanvas');
+    var el = document.getElementById('myCanvas') as HTMLCanvasElement;
+    var svg = document.getElementById('mySvg') as any as SVGSVGElement;
 
     //var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
 
-    var greeter = new TargetCtrl(el);
+    var greeter = new TargetCtrl(el,svg);
 };
