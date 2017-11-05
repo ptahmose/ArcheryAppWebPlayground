@@ -70,19 +70,23 @@ var TargetCtrl = (function () {
         this.backupElement.height = this.canvasHeight;
         var ctxBackup = this.backupElement.getContext("2d");
         ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
-        this.drawHits();
+        this.insertHitsGroup();
+        var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
+        this.drawHits(h);
     }
     TargetCtrl.prototype.insertHitsGroup = function () {
         var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         group.setAttribute('transform', 'scale(1024,1024)');
+        this.hitGroup = group;
         var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
         hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
         hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
         group.appendChild(hit);
         this.svgElement.appendChild(group);
     };
-    TargetCtrl.prototype.drawHits = function () {
-        this.insertHitsGroup();
+    TargetCtrl.prototype.drawHits = function (hitCoordinates) {
+        var _this = this;
+        //this.insertHitsGroup();
         //var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
         //circleElement.setAttribute('cx', "200");
         //circleElement.setAttribute('cy', "200");
@@ -91,6 +95,15 @@ var TargetCtrl = (function () {
         //circleElement.setAttribute('stroke-width', "4");
         //circleElement.setAttribute('fill', "yellow");
         //this.svgElement.appendChild(circleElement);
+        while (this.hitGroup.firstChild) {
+            this.hitGroup.removeChild(this.hitGroup.firstChild);
+        }
+        hitCoordinates.forEach(function (v) {
+            var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
+            hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
+            hit.setAttribute('transform', 'translate(' + v.x.toString() + ',' + v.y.toString() + ') scale(0.1,0.1)');
+            _this.hitGroup.appendChild(hit);
+        });
     };
     TargetCtrl.prototype.setupEvents = function () {
         var _this = this;

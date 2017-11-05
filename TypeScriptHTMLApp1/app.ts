@@ -49,7 +49,7 @@ class TargetCtrl {
     element: HTMLCanvasElement;
     canvasWidth: number;
     canvasHeight: number;
-    svgElement:SVGSVGElement;
+    svgElement: SVGSVGElement;
 
     backupElement: HTMLCanvasElement;
 
@@ -88,12 +88,15 @@ class TargetCtrl {
         var ctxBackup = this.backupElement.getContext("2d");
         ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
 
-        this.drawHits();
+        this.insertHitsGroup();
+        var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
+        this.drawHits(h);
     }
 
     private insertHitsGroup(): void {
         var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         group.setAttribute('transform', 'scale(1024,1024)');
+        this.hitGroup = group;
 
         var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
         hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
@@ -102,8 +105,8 @@ class TargetCtrl {
         this.svgElement.appendChild(group);
     }
 
-    private drawHits(): void {
-        this.insertHitsGroup();
+    private drawHits(hitCoordinates: { x: number, y: number }[]): void {
+        //this.insertHitsGroup();
         //var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
         //circleElement.setAttribute('cx', "200");
         //circleElement.setAttribute('cy', "200");
@@ -112,6 +115,16 @@ class TargetCtrl {
         //circleElement.setAttribute('stroke-width', "4");
         //circleElement.setAttribute('fill', "yellow");
         //this.svgElement.appendChild(circleElement);
+        while (this.hitGroup.firstChild) {
+            this.hitGroup.removeChild(this.hitGroup.firstChild);
+        }
+
+        hitCoordinates.forEach((v) => {
+            var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
+            hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
+            hit.setAttribute('transform', 'translate(' + v.x.toString() + ',' + v.y.toString() + ') scale(0.1,0.1)');
+            this.hitGroup.appendChild(hit);
+        });
     }
 
     setupEvents(): void {
@@ -321,5 +334,5 @@ window.onload = () => {
 
     //var el2 = <HTMLCanvasElement>document.getElementById('myCanvas2');
 
-    var greeter = new TargetCtrl(el,svg);
+    var greeter = new TargetCtrl(el, svg);
 };
