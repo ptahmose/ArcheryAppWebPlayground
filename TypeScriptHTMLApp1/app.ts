@@ -106,18 +106,7 @@ class TargetCtrl {
     }
 
     private drawHits(hitCoordinates: { x: number, y: number }[]): void {
-        //this.insertHitsGroup();
-        //var circleElement = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-        //circleElement.setAttribute('cx', "200");
-        //circleElement.setAttribute('cy', "200");
-        //circleElement.setAttribute('r', "40");
-        //circleElement.setAttribute('stroke', "green");
-        //circleElement.setAttribute('stroke-width', "4");
-        //circleElement.setAttribute('fill', "yellow");
-        //this.svgElement.appendChild(circleElement);
-        while (this.hitGroup.firstChild) {
-            this.hitGroup.removeChild(this.hitGroup.firstChild);
-        }
+        while (this.hitGroup.firstChild) { this.hitGroup.removeChild(this.hitGroup.firstChild); }
 
         hitCoordinates.forEach((v) => {
             var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
@@ -163,11 +152,56 @@ class TargetCtrl {
     private curZoom: number;
     private zoomAnimation: any;
 
+    private setHitGraphicsTransform(centerX: number, centerY: number, zoom: number): void {
+        zoom = 1 / zoom;
+
+        // calculate the coordinate of the center of the scaled rectangle
+        var xP = (this.canvasWidth * zoom) / 2;
+        var yP = (this.canvasHeight * zoom) / 2;
+
+        var distX = (this.canvasWidth / 2) - centerX;
+        var distY = (this.canvasHeight / 2) - centerY;
+
+        // and now we need to translate (xP,yP) to the center
+        var xDiff = xP - centerX;
+        var yDiff = yP - centerY;
+
+        xDiff -= distX * zoom;
+        yDiff -= distY * zoom;
+
+
+        var scale = 1 / zoom;
+        //var t = 'scale(1024,1024) scale(' + zoom + ',' + zoom + ') translate(' + (-xDiff).toString() + ',' + (-yDiff).toString() + ')';
+        //var t = 'scale(1024,1024)  scale(' + scale + ',' + scale + ')';
+        //var t = 'scale(1024,1024)  translate(' + (-xDiff).toString() + ',' + (-yDiff).toString() + ')';
+        //zoom = 2;
+        //var t = 'scale(1024,1024) scale(' + zoom + ',' + zoom + ') translate(' + (-xDiff / 1024) + ',' + (-yDiff / 1024)+')';
+
+        //var t = 'translate(-512,-512) scale(2048,2048)  ';
+        var xx = this.canvasWidth / 2 * zoom - ((this.canvasWidth / 2) /*+ (this.canvasWidth / 4)*/);//+((this.canvasWidth) / 2-centerX);
+        var yy = this.canvasHeight / 2 * zoom - ((this.canvasHeight / 2) /*+ (this.canvasWidth / 4)*/);//+((this.canvasHeight) / 2-centerY);
+        //var t = 'translate(-1536,-1536) scale(4096,4096)  ';
+        var wx = this.canvasWidth * zoom;
+        var wy = this.canvasHeight * zoom;
+
+        var xx1 = (centerX / 1024) * wx - centerX;
+        var yy1 = (centerY / 1024) * wy - centerY;
+
+        var t = 'translate('+(-xx1)+','+(-yy1)+') scale('+wx+','+wy+')  ';
+        //var t = 'translate(-1524,-1524) scale(4096,4096)  ';
+        /*var s = 1024 * zoom;
+        var t = 'translate(' + (-xDiff) + ',' + (-yDiff) + ') scale(' + s + ',' + s + ')';*/
+        this.hitGroup.setAttribute('transform', t);
+    }
+
     OnMouseDown(ev: MouseEvent): void {
         if (this.zoomAnimation != null) {
             this.zoomAnimation.stop();
         }
         this.runZoomInAnimation(ev, this.curZoom, 0.1);
+
+       // this.setHitGraphicsTransform(512, 512, 1.0 / 3);
+
     }
 
     OnMouseUp(ev: MouseEvent): void {
@@ -180,6 +214,7 @@ class TargetCtrl {
 
     private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
         var pos = this.getMousePos(this.element, ev);
+        //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
         this.zoomAnimation = $({ xyz: startZoom });
         /*$({ xyz: startZoom })*/this.zoomAnimation.animate(
             { xyz: endZoom },
@@ -190,11 +225,17 @@ class TargetCtrl {
                     var ctx = this.element.getContext("2d");
                     this.setTransform(ctx, pos.x, pos.y, now);
                     ctx.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
+
+                    this.setHitGraphicsTransform(pos.x, pos.y, now);
+
                     this.curZoom = now;
                 },
                 complete: (now, fx) => {
                     var ctx = this.element.getContext("2d");
                     this.drawZoomed(ctx, pos.x, pos.y, endZoom);
+
+                    this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
+
                     this.curZoom = endZoom;
                     this.zoomAnimation = null;
                 }
