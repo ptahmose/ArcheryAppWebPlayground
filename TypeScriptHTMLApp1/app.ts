@@ -96,12 +96,13 @@ class TargetCtrl {
     private insertHitsGroup(): void {
         var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         group.setAttribute('transform', 'scale(1024,1024)');
+        // group.setAttribute('style', "clip-path: url(#clipPath);");
         this.hitGroup = group;
 
-        var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
-        hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
-        hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
-        group.appendChild(hit);
+        //var hit = document.createElementNS("http://www.w3.org/2000/svg", 'use');
+        //hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
+        //hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
+        //group.appendChild(hit);
         this.svgElement.appendChild(group);
     }
 
