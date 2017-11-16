@@ -51,6 +51,8 @@ class TargetCtrl {
     canvasHeight: number;
     svgElement: SVGSVGElement;
 
+    crosshairElement: SVGGElement;
+
     backupElement: HTMLCanvasElement;
 
     hitGroup: SVGGElement;
@@ -91,9 +93,13 @@ class TargetCtrl {
         this.insertHitsGroup();
         var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
         this.drawHits(h);
+
+        this.crosshairElement = <SVGGElement>this.svgElement.getElementById('crosshairGroup');
     }
 
     private insertHitsGroup(): void {
+        //var groupWithClip = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+        //groupWithClip.setAttribute('style', "clip-path: url(#clipPath);");
         var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         group.setAttribute('transform', 'scale(1024,1024)');
         // group.setAttribute('style', "clip-path: url(#clipPath);");
@@ -103,7 +109,10 @@ class TargetCtrl {
         //hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
         //hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
         //group.appendChild(hit);
-        this.svgElement.appendChild(group);
+
+        //groupWithClip.appendChild(group);
+        this.svgElement.getElementById('hits').appendChild(group);
+        //this.svgElement.appendChild(group);
     }
 
     private drawHits(hitCoordinates: { x: number, y: number }[]): void {
@@ -120,6 +129,7 @@ class TargetCtrl {
     setupEvents(): void {
         this.element.onmousedown = (ev: MouseEvent) => { this.OnMouseDown(ev); };
         this.element.onmouseup = (ev: MouseEvent) => { this.OnMouseUp(ev); }
+        this.element.onmousemove = (ev: MouseEvent) => { this.OnMouseMove(ev); }
     }
 
     setTransform(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, zoom: number): void {
@@ -154,6 +164,7 @@ class TargetCtrl {
     private zoomAnimation: any;
 
     private setHitGraphicsTransform(centerX: number, centerY: number, zoom: number): void {
+
         zoom = 1 / zoom;
 
         // calculate the coordinate of the center of the scaled rectangle
@@ -188,7 +199,7 @@ class TargetCtrl {
         var xx1 = (centerX / 1024) * wx - centerX;
         var yy1 = (centerY / 1024) * wy - centerY;
 
-        var t = 'translate('+(-xx1)+','+(-yy1)+') scale('+wx+','+wy+')  ';
+        var t = 'translate(' + (-xx1) + ',' + (-yy1) + ') scale(' + wx + ',' + wy + ')  ';
         //var t = 'translate(-1524,-1524) scale(4096,4096)  ';
         /*var s = 1024 * zoom;
         var t = 'translate(' + (-xDiff) + ',' + (-yDiff) + ') scale(' + s + ',' + s + ')';*/
@@ -201,7 +212,7 @@ class TargetCtrl {
         }
         this.runZoomInAnimation(ev, this.curZoom, 0.1);
 
-       // this.setHitGraphicsTransform(512, 512, 1.0 / 3);
+        // this.setHitGraphicsTransform(512, 512, 1.0 / 3);
 
     }
 
@@ -213,6 +224,16 @@ class TargetCtrl {
         this.runZoomInAnimation(ev, this.curZoom, 1);
     }
 
+    OnMouseMove(ev: MouseEvent): void {
+        //console.debug(ev.x);
+        //console.debug(ev.y);
+        var pos = this.getMousePos(this.element, ev);
+        this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (pos.x - 1024 / 2) / 1024 + ',' + (pos.y - 1024 / 2) / 1024 + ') ');
+        //this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (ev.x-1024/2)/1024 + ',' + (ev.y-1024/2)/1024 + ') ');
+        //this.crosshairElement.setAttribute('transform', ' scale(1024,1024) translate(0.5 0) ');
+        //this.crosshairElement.setAttribute('transform', 'scale(1024,512) ');
+    }
+
     private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
         var pos = this.getMousePos(this.element, ev);
         //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
@@ -220,7 +241,7 @@ class TargetCtrl {
         /*$({ xyz: startZoom })*/this.zoomAnimation.animate(
             { xyz: endZoom },
             {
-                duration: 350,
+                duration: 150,
                 step: (now, fx) => {
                     //console.log("anim now " + now);
                     var ctx = this.element.getContext("2d");

@@ -73,8 +73,11 @@ var TargetCtrl = (function () {
         this.insertHitsGroup();
         var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
         this.drawHits(h);
+        this.crosshairElement = this.svgElement.getElementById('crosshairGroup');
     }
     TargetCtrl.prototype.insertHitsGroup = function () {
+        //var groupWithClip = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+        //groupWithClip.setAttribute('style', "clip-path: url(#clipPath);");
         var group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         group.setAttribute('transform', 'scale(1024,1024)');
         // group.setAttribute('style', "clip-path: url(#clipPath);");
@@ -83,7 +86,9 @@ var TargetCtrl = (function () {
         //hit.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#shape');
         //hit.setAttribute('transform', 'translate(0.25,0.25) scale(0.1,0.1)');
         //group.appendChild(hit);
-        this.svgElement.appendChild(group);
+        //groupWithClip.appendChild(group);
+        this.svgElement.getElementById('hits').appendChild(group);
+        //this.svgElement.appendChild(group);
     };
     TargetCtrl.prototype.drawHits = function (hitCoordinates) {
         var _this = this;
@@ -101,6 +106,7 @@ var TargetCtrl = (function () {
         var _this = this;
         this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
         this.element.onmouseup = function (ev) { _this.OnMouseUp(ev); };
+        this.element.onmousemove = function (ev) { _this.OnMouseMove(ev); };
     };
     TargetCtrl.prototype.setTransform = function (ctx, centerX, centerY, zoom) {
         zoom = 1 / zoom;
@@ -168,13 +174,22 @@ var TargetCtrl = (function () {
         }
         this.runZoomInAnimation(ev, this.curZoom, 1);
     };
+    TargetCtrl.prototype.OnMouseMove = function (ev) {
+        //console.debug(ev.x);
+        //console.debug(ev.y);
+        var pos = this.getMousePos(this.element, ev);
+        this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (pos.x - 1024 / 2) / 1024 + ',' + (pos.y - 1024 / 2) / 1024 + ') ');
+        //this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (ev.x-1024/2)/1024 + ',' + (ev.y-1024/2)/1024 + ') ');
+        //this.crosshairElement.setAttribute('transform', ' scale(1024,1024) translate(0.5 0) ');
+        //this.crosshairElement.setAttribute('transform', 'scale(1024,512) ');
+    };
     TargetCtrl.prototype.runZoomInAnimation = function (ev, startZoom, endZoom) {
         var _this = this;
         var pos = this.getMousePos(this.element, ev);
         //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
         this.zoomAnimation = $({ xyz: startZoom });
         /*$({ xyz: startZoom })*/ this.zoomAnimation.animate({ xyz: endZoom }, {
-            duration: 350,
+            duration: 150,
             step: function (now, fx) {
                 //console.log("anim now " + now);
                 var ctx = _this.element.getContext("2d");
