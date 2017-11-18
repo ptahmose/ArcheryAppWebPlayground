@@ -3,7 +3,7 @@
 //import $ from 'jquery'
 //import $ = require("jquery");
 
-class Greeter {
+/*class Greeter {
     element: HTMLElement;
     span: HTMLElement;
     timerToken: number;
@@ -24,7 +24,7 @@ class Greeter {
         clearTimeout(this.timerToken);
     }
 
-}
+}*/
 
 class TargetSegment {
     segmentColor: ColorUtils.RGB;
@@ -45,7 +45,13 @@ class CanvasInfo {
     get radiusY(): number { return this.height / 2; }
 }
 
-class TargetCtrl {
+interface IShotPositions{
+    addShot(x:number,y:number):void;
+
+}
+
+class TargetCtrl implements IShotPositions {
+
     element: HTMLCanvasElement;
     canvasWidth: number;
     canvasHeight: number;
@@ -56,6 +62,8 @@ class TargetCtrl {
     backupElement: HTMLCanvasElement;
 
     hitGroup: SVGGElement;
+
+    shotPositions:{x:number,y:number}[];
 
     static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
     static BlackSegment = new ColorUtils.RGB(54, 49, 53);
@@ -92,9 +100,16 @@ class TargetCtrl {
 
         this.insertHitsGroup();
         var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
+        this.shotPositions=h;
         this.drawHits(h);
 
         this.crosshairElement = <SVGGElement>this.svgElement.getElementById('crosshairGroup');
+    }
+
+    addShot(x: number, y: number): void {
+        this.shotPositions.push({x:x,y:y});
+        this.drawHits(this.shotPositions);
+        //throw new Error("Method not implemented.");
     }
 
     private insertHitsGroup(): void {
@@ -160,6 +175,11 @@ class TargetCtrl {
         };
     }
 
+    getMousePosNormalized(canvas: HTMLCanvasElement, evt: MouseEvent): { x: number, y: number } {
+        var pos=this.getMousePos(canvas,evt);
+        return {x:pos.x/this.canvasWidth,y:pos.y/this.canvasHeight};
+    }
+
     private curZoom: number;
     private zoomAnimation: any;
 
@@ -222,6 +242,9 @@ class TargetCtrl {
         }
 
         this.runZoomInAnimation(ev, this.curZoom, 1);
+
+        var pos = this.getMousePosNormalized(this.element, ev);
+        this.addShot(pos.x,pos.y);
     }
 
     OnMouseMove(ev: MouseEvent): void {
