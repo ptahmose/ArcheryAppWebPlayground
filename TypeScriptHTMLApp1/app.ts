@@ -36,8 +36,7 @@ class TargetSegment {
 }
 
 class CanvasInfo {
-    constructor(readonly width: number, readonly height: number)
-    { }
+    constructor(readonly width: number, readonly height: number) { }
 
     get centerX(): number { return this.width / 2; }
     get centerY(): number { return this.height / 2; }
@@ -45,8 +44,8 @@ class CanvasInfo {
     get radiusY(): number { return this.height / 2; }
 }
 
-interface IShotPositions{
-    addShot(x:number,y:number):void;
+interface IShotPositions {
+    addShot(x: number, y: number): void;
 
 }
 
@@ -63,7 +62,15 @@ class TargetCtrl implements IShotPositions {
 
     hitGroup: SVGGElement;
 
-    shotPositions:{x:number,y:number}[];
+    shotPositions: { x: number, y: number }[];
+
+    /**
+     * If non-null, this is the x/y coordinate of the center of the (currently zoomed) display.
+     * 
+     * @type {{ x: number, y: number }}
+     * @memberof TargetCtrl
+     */
+    zoomCenterPos: { x: number, y: number };
 
     static WhiteSegment = new ColorUtils.RGB(226, 216, 217);
     static BlackSegment = new ColorUtils.RGB(54, 49, 53);
@@ -100,14 +107,14 @@ class TargetCtrl implements IShotPositions {
 
         this.insertHitsGroup();
         var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
-        this.shotPositions=h;
+        this.shotPositions = h;
         this.drawHits(h);
 
         this.crosshairElement = <SVGGElement>this.svgElement.getElementById('crosshairGroup');
     }
 
     addShot(x: number, y: number): void {
-        this.shotPositions.push({x:x,y:y});
+        this.shotPositions.push({ x: x, y: y });
         this.drawHits(this.shotPositions);
         //throw new Error("Method not implemented.");
     }
@@ -176,8 +183,8 @@ class TargetCtrl implements IShotPositions {
     }
 
     getMousePosNormalized(canvas: HTMLCanvasElement, evt: MouseEvent): { x: number, y: number } {
-        var pos=this.getMousePos(canvas,evt);
-        return {x:pos.x/this.canvasWidth,y:pos.y/this.canvasHeight};
+        var pos = this.getMousePos(canvas, evt);
+        return { x: pos.x / this.canvasWidth, y: pos.y / this.canvasHeight };
     }
 
     private curZoom: number;
@@ -241,10 +248,12 @@ class TargetCtrl implements IShotPositions {
             this.zoomAnimation.stop();
         }
 
-        this.runZoomInAnimation(ev, this.curZoom, 1);
+        //this.runZoomInAnimation(ev, this.curZoom, 1);
 
         var pos = this.getMousePosNormalized(this.element, ev);
-        this.addShot(pos.x,pos.y);
+        var posTransformed = this.TransformToUnzoomedNormalized(pos);
+        this.addShot(posTransformed.x, posTransformed.y);
+        this.runZoomInAnimation(ev, this.curZoom, 1);     
     }
 
     OnMouseMove(ev: MouseEvent): void {
@@ -257,8 +266,32 @@ class TargetCtrl implements IShotPositions {
         //this.crosshairElement.setAttribute('transform', 'scale(1024,512) ');
     }
 
+    private TransformToUnzoomedNormalized( pos:{ x: number, y: number }): { x: number, y: number }
+    {
+        if (this.curZoom==1||this.zoomCenterPos==null)
+        {
+            return pos;
+        }
+
+        var posAbs=this.DeNormalize(pos);
+        var diff = {dx:(posAbs.x-this.zoomCenterPos.x)*this.curZoom,dy:(posAbs.y-this.zoomCenterPos.y)*this.curZoom};
+        //var zoomCenterNormalized=this.Normalize(this.zoomCenterPos)
+        var pos2={x:this.zoomCenterPos.x+diff.dx,y:this.zoomCenterPos.y+diff.dy};
+        var posNormalized=this.Normalize(pos2);
+        return posNormalized;
+    }
+
+    private Normalize(pos: { x: number, y: number }): { x: number, y: number } {
+        return { x: pos.x / this.canvasWidth, y: pos.y / this.canvasHeight };
+    }
+
+    private DeNormalize(pos: { x: number, y: number }): { x: number, y: number } {
+        return { x: pos.x * this.canvasWidth, y: pos.y * this.canvasHeight };
+    }
+
     private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
-        var pos = this.getMousePos(this.element, ev);
+        //var pos = this.getMousePos(this.element, ev);
+        this.zoomCenterPos=this.getMousePos(this.element, ev);
         //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
         this.zoomAnimation = $({ xyz: startZoom });
         /*$({ xyz: startZoom })*/this.zoomAnimation.animate(
@@ -268,21 +301,23 @@ class TargetCtrl implements IShotPositions {
                 step: (now, fx) => {
                     //console.log("anim now " + now);
                     var ctx = this.element.getContext("2d");
-                    this.setTransform(ctx, pos.x, pos.y, now);
+                    this.setTransform(ctx, this.zoomCenterPos.x, this.zoomCenterPos.y, now);
                     ctx.drawImage(this.backupElement, 0, 0, this.canvasWidth, this.canvasHeight);
 
-                    this.setHitGraphicsTransform(pos.x, pos.y, now);
+                    this.setHitGraphicsTransform(this.zoomCenterPos.x, this.zoomCenterPos.y, now);
 
                     this.curZoom = now;
                 },
                 complete: (now, fx) => {
                     var ctx = this.element.getContext("2d");
-                    this.drawZoomed(ctx, pos.x, pos.y, endZoom);
+                    this.drawZoomed(ctx, this.zoomCenterPos.x, this.zoomCenterPos.y, endZoom);
 
-                    this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
+                    this.setHitGraphicsTransform(this.zoomCenterPos.x, this.zoomCenterPos.y, endZoom);
 
                     this.curZoom = endZoom;
                     this.zoomAnimation = null;
+                    if (this.curZoom==1){
+                    this.zoomCenterPos=null;}
                 }
             });
     }
