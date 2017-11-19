@@ -118,15 +118,26 @@ var TargetCtrl = /** @class */ (function () {
         this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
         this.element.onmouseup = function (ev) { _this.OnMouseUp(ev); };
         this.element.onmousemove = function (ev) { _this.OnMouseMove(ev); };
-        //        this.element.addEventListener("ontouchstart",(ev:TouchEvent)=>{this.OnTouchStart(ev);}, false );
-        this.element.ontouchstart = function (ev) { _this.OnTouchStart(ev); };
-        this.element.ontouchmove = function (ev) { _this.OnTouchMove(ev); };
-        this.element.ontouchend = function (ev) { _this.OnTouchEnd(ev); };
+        this.element.addEventListener("touchstart", function (ev) { _this.OnTouchStart(ev); }, false);
+        this.element.addEventListener("touchmove", function (ev) { _this.OnTouchMove(ev); }, false);
+        this.element.addEventListener("touchend", function (ev) { _this.OnTouchEnd(ev); }, false);
+        //this.element.ontouchstart=(ev:TouchEvent)=>{this.OnTouchStart(ev);}
+        //this.element.ontouchmove=(ev:TouchEvent)=>{TouchEvent}
+        //this.element.ontouchend=(ev:TouchEvent)=>{this.OnTouchEnd(ev);}
+        // this.element.addEventListener("contextmenu", function (e) {
+        //    // e.target.innerHTML = "Show a custom menu instead of the default context menu";
+        //     e.preventDefault();    // Disables system menu
+        //   }, false);
         this.element.addEventListener("contextmenu", function (e) {
-            // e.target.innerHTML = "Show a custom menu instead of the default context menu";
-            e.preventDefault(); // Disables system menu
+            e.preventDefault();
+        }, true);
+        this.element.addEventListener("MSHoldVisual", function (e) {
+            e.preventDefault();
         }, false);
     };
+    // private handleOnTouchStart = (evt:TouchEvent) => { // Since you want to pass this around  
+    //     this.OnTouchStart(evt);
+    // }
     TargetCtrl.prototype.setTransform = function (ctx, centerX, centerY, zoom) {
         zoom = 1 / zoom;
         // calculate the coordinate of the center of the scaled rectangle

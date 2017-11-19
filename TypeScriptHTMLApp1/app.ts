@@ -151,18 +151,34 @@ class TargetCtrl implements IShotPositions {
         this.element.onmousedown = (ev: MouseEvent) => { this.OnMouseDown(ev); };
         this.element.onmouseup = (ev: MouseEvent) => { this.OnMouseUp(ev); }
         this.element.onmousemove = (ev: MouseEvent) => { this.OnMouseMove(ev); }
-//        this.element.addEventListener("ontouchstart",(ev:TouchEvent)=>{this.OnTouchStart(ev);}, false );
-        this.element.ontouchstart=(ev:TouchEvent)=>{this.OnTouchStart(ev);}
-        this.element.ontouchmove=(ev:TouchEvent)=>{this.OnTouchMove(ev);}
-        this.element.ontouchend=(ev:TouchEvent)=>{this.OnTouchEnd(ev);}
 
-        this.element.addEventListener("contextmenu", function (e) {
-           // e.target.innerHTML = "Show a custom menu instead of the default context menu";
-            e.preventDefault();    // Disables system menu
-          }, false);
-      
+        this.element.addEventListener("touchstart",(ev:TouchEvent)=>{this.OnTouchStart(ev);}, false );
+        this.element.addEventListener("touchmove",(ev:TouchEvent)=>{this.OnTouchMove(ev);}, false );
+        this.element.addEventListener("touchend",(ev:TouchEvent)=>{this.OnTouchEnd(ev);}, false );
+       
+
+        //this.element.ontouchstart=(ev:TouchEvent)=>{this.OnTouchStart(ev);}
+        //this.element.ontouchmove=(ev:TouchEvent)=>{TouchEvent}
+        //this.element.ontouchend=(ev:TouchEvent)=>{this.OnTouchEnd(ev);}
+        
+
+        // this.element.addEventListener("contextmenu", function (e) {
+        //    // e.target.innerHTML = "Show a custom menu instead of the default context menu";
+        //     e.preventDefault();    // Disables system menu
+        //   }, false);
+        this.element.addEventListener("contextmenu", function(e) 
+        {
+             e.preventDefault(); 
+            },true);
+            this.element.addEventListener("MSHoldVisual", function(e)
+         {
+              e.preventDefault();
+             }, false);
     }
 
+    // private handleOnTouchStart = (evt:TouchEvent) => { // Since you want to pass this around  
+    //     this.OnTouchStart(evt);
+    // }
     setTransform(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, zoom: number): void {
         zoom = 1 / zoom;
 
