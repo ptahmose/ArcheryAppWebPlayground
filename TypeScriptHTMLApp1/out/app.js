@@ -1,23 +1,28 @@
 //import $ from 'jquery'
 //import $ = require("jquery");
-var Greeter = (function () {
-    function Greeter(element) {
+/*class Greeter {
+    element: HTMLElement;
+    span: HTMLElement;
+    timerToken: number;
+
+    constructor(element: HTMLElement) {
         this.element = element;
         this.element.innerHTML += "The time is: ";
         this.span = document.createElement('span');
         this.element.appendChild(this.span);
         this.span.innerText = new Date().toUTCString();
     }
-    Greeter.prototype.start = function () {
-        var _this = this;
-        this.timerToken = setInterval(function () { return _this.span.innerHTML = new Date().toUTCString(); }, 500);
-    };
-    Greeter.prototype.stop = function () {
+
+    start() {
+        this.timerToken = setInterval(() => this.span.innerHTML = new Date().toUTCString(), 500);
+    }
+
+    stop() {
         clearTimeout(this.timerToken);
-    };
-    return Greeter;
-}());
-var TargetSegment = (function () {
+    }
+
+}*/
+var TargetSegment = /** @class */ (function () {
     function TargetSegment(radius, marginWidth, text, segmentColor, marginColor, textColor) {
         this.radius = radius;
         this.marginWidth = marginWidth;
@@ -27,7 +32,7 @@ var TargetSegment = (function () {
     }
     return TargetSegment;
 }());
-var CanvasInfo = (function () {
+var CanvasInfo = /** @class */ (function () {
     function CanvasInfo(width, height) {
         this.width = width;
         this.height = height;
@@ -54,7 +59,7 @@ var CanvasInfo = (function () {
     });
     return CanvasInfo;
 }());
-var TargetCtrl = (function () {
+var TargetCtrl = /** @class */ (function () {
     function TargetCtrl(element, svg) {
         this.curZoom = 1;
         this.element = element;
@@ -72,9 +77,15 @@ var TargetCtrl = (function () {
         ctxBackup.drawImage(this.element, 0, 0, this.canvasWidth, this.canvasHeight);
         this.insertHitsGroup();
         var h = [{ x: 0.25, y: 0.25 }, { x: 0.25, y: 0.75 }, { x: 0.75, y: 0.25 }, { x: 0.75, y: 0.75 }, { x: 0.5, y: 0.5 }];
+        this.shotPositions = h;
         this.drawHits(h);
         this.crosshairElement = this.svgElement.getElementById('crosshairGroup');
     }
+    TargetCtrl.prototype.addShot = function (x, y) {
+        this.shotPositions.push({ x: x, y: y });
+        this.drawHits(this.shotPositions);
+        //throw new Error("Method not implemented.");
+    };
     TargetCtrl.prototype.insertHitsGroup = function () {
         //var groupWithClip = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         //groupWithClip.setAttribute('style', "clip-path: url(#clipPath);");
@@ -107,6 +118,14 @@ var TargetCtrl = (function () {
         this.element.onmousedown = function (ev) { _this.OnMouseDown(ev); };
         this.element.onmouseup = function (ev) { _this.OnMouseUp(ev); };
         this.element.onmousemove = function (ev) { _this.OnMouseMove(ev); };
+        //        this.element.addEventListener("ontouchstart",(ev:TouchEvent)=>{this.OnTouchStart(ev);}, false );
+        this.element.ontouchstart = function (ev) { _this.OnTouchStart(ev); };
+        this.element.ontouchmove = function (ev) { _this.OnTouchMove(ev); };
+        this.element.ontouchend = function (ev) { _this.OnTouchEnd(ev); };
+        this.element.addEventListener("contextmenu", function (e) {
+            // e.target.innerHTML = "Show a custom menu instead of the default context menu";
+            e.preventDefault(); // Disables system menu
+        }, false);
     };
     TargetCtrl.prototype.setTransform = function (ctx, centerX, centerY, zoom) {
         zoom = 1 / zoom;
@@ -128,6 +147,10 @@ var TargetCtrl = (function () {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
+    };
+    TargetCtrl.prototype.getMousePosNormalized = function (canvas, evt) {
+        var pos = this.getMousePos(canvas, evt);
+        return { x: pos.x / this.canvasWidth, y: pos.y / this.canvasHeight };
     };
     TargetCtrl.prototype.setHitGraphicsTransform = function (centerX, centerY, zoom) {
         zoom = 1 / zoom;
@@ -162,6 +185,8 @@ var TargetCtrl = (function () {
         this.hitGroup.setAttribute('transform', t);
     };
     TargetCtrl.prototype.OnMouseDown = function (ev) {
+        // if (ev.touches && ev.touches.length > 0) {
+        // }
         if (this.zoomAnimation != null) {
             this.zoomAnimation.stop();
         }
@@ -172,9 +197,34 @@ var TargetCtrl = (function () {
         if (this.zoomAnimation != null) {
             this.zoomAnimation.stop();
         }
+        //this.runZoomInAnimation(ev, this.curZoom, 1);
+        var pos = this.getMousePosNormalized(this.element, ev);
+        var posTransformed = this.TransformToUnzoomedNormalized(pos);
+        this.addShot(posTransformed.x, posTransformed.y);
         this.runZoomInAnimation(ev, this.curZoom, 1);
     };
+    TargetCtrl.prototype.OnTouchStart = function (ev) {
+        ev.preventDefault();
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        //throw new Error("Method not implemented.");
+        console.log("Touch-Start" + ev.touches.length);
+        var rect = this.element.getBoundingClientRect();
+        var pos = { x: ev.touches[0].clientX - rect.left, y: ev.touches[0].clientY - rect.top };
+        console.log("Touch-Start" + ev.touches.length + " x=" + pos.x + " y=" + pos.y);
+        this.runZoomInAnimation_(pos, this.curZoom, 0.1);
+    };
+    TargetCtrl.prototype.OnTouchMove = function (ev) {
+        //throw new Error("Method not implemented.");
+        console.log("Touch-Move: " + ev.touches.length);
+        var rect = this.element.getBoundingClientRect();
+        var pos = { x: ev.touches[0].clientX - rect.left, y: ev.touches[0].clientY - rect.top };
+        this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (pos.x - 1024 / 2) / 1024 + ',' + (pos.y - 1024 / 2) / 1024 + ') ');
+        ev.preventDefault();
+    };
     TargetCtrl.prototype.OnMouseMove = function (ev) {
+        ev.preventDefault();
         //console.debug(ev.x);
         //console.debug(ev.y);
         var pos = this.getMousePos(this.element, ev);
@@ -183,9 +233,37 @@ var TargetCtrl = (function () {
         //this.crosshairElement.setAttribute('transform', ' scale(1024,1024) translate(0.5 0) ');
         //this.crosshairElement.setAttribute('transform', 'scale(1024,512) ');
     };
+    TargetCtrl.prototype.OnTouchEnd = function (ev) {
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        ev.preventDefault();
+        this.runZoomInAnimation_(this.zoomCenterPos, this.curZoom, 1);
+    };
+    TargetCtrl.prototype.TransformToUnzoomedNormalized = function (pos) {
+        if (this.curZoom == 1 || this.zoomCenterPos == null) {
+            return pos;
+        }
+        var posAbs = this.DeNormalize(pos);
+        var diff = { dx: (posAbs.x - this.zoomCenterPos.x) * this.curZoom, dy: (posAbs.y - this.zoomCenterPos.y) * this.curZoom };
+        //var zoomCenterNormalized=this.Normalize(this.zoomCenterPos)
+        var pos2 = { x: this.zoomCenterPos.x + diff.dx, y: this.zoomCenterPos.y + diff.dy };
+        var posNormalized = this.Normalize(pos2);
+        return posNormalized;
+    };
+    TargetCtrl.prototype.Normalize = function (pos) {
+        return { x: pos.x / this.canvasWidth, y: pos.y / this.canvasHeight };
+    };
+    TargetCtrl.prototype.DeNormalize = function (pos) {
+        return { x: pos.x * this.canvasWidth, y: pos.y * this.canvasHeight };
+    };
     TargetCtrl.prototype.runZoomInAnimation = function (ev, startZoom, endZoom) {
+        this.runZoomInAnimation_(this.getMousePos(this.element, ev), startZoom, endZoom);
+    };
+    TargetCtrl.prototype.runZoomInAnimation_ = function (zoomCenter, startZoom, endZoom) {
         var _this = this;
-        var pos = this.getMousePos(this.element, ev);
+        //var pos = this.getMousePos(this.element, ev);
+        this.zoomCenterPos = zoomCenter; //this.getMousePos(this.element, ev);
         //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
         this.zoomAnimation = $({ xyz: startZoom });
         /*$({ xyz: startZoom })*/ this.zoomAnimation.animate({ xyz: endZoom }, {
@@ -193,17 +271,20 @@ var TargetCtrl = (function () {
             step: function (now, fx) {
                 //console.log("anim now " + now);
                 var ctx = _this.element.getContext("2d");
-                _this.setTransform(ctx, pos.x, pos.y, now);
+                _this.setTransform(ctx, _this.zoomCenterPos.x, _this.zoomCenterPos.y, now);
                 ctx.drawImage(_this.backupElement, 0, 0, _this.canvasWidth, _this.canvasHeight);
-                _this.setHitGraphicsTransform(pos.x, pos.y, now);
+                _this.setHitGraphicsTransform(_this.zoomCenterPos.x, _this.zoomCenterPos.y, now);
                 _this.curZoom = now;
             },
             complete: function (now, fx) {
                 var ctx = _this.element.getContext("2d");
-                _this.drawZoomed(ctx, pos.x, pos.y, endZoom);
-                _this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
+                _this.drawZoomed(ctx, _this.zoomCenterPos.x, _this.zoomCenterPos.y, endZoom);
+                _this.setHitGraphicsTransform(_this.zoomCenterPos.x, _this.zoomCenterPos.y, endZoom);
                 _this.curZoom = endZoom;
                 _this.zoomAnimation = null;
+                if (_this.curZoom == 1) {
+                    _this.zoomCenterPos = null;
+                }
             }
         });
     };
@@ -272,20 +353,20 @@ var TargetCtrl = (function () {
         ctx.strokeStyle = ColorUtils.ColorHelper.rgbToHex(color);
         ctx.stroke();
     };
+    TargetCtrl.WhiteSegment = new ColorUtils.RGB(226, 216, 217);
+    TargetCtrl.BlackSegment = new ColorUtils.RGB(54, 49, 53);
+    TargetCtrl.BlueSegment = new ColorUtils.RGB(68, 173, 228);
+    TargetCtrl.RedSegment = new ColorUtils.RGB(231, 37, 35);
+    TargetCtrl.RedSegmentText = new ColorUtils.RGB(176, 127, 113);
+    TargetCtrl.GoldSegment = new ColorUtils.RGB(251, 209, 3);
+    TargetCtrl.GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
+    TargetCtrl.WhiteSegmentText = new ColorUtils.RGB(111, 106, 103);
+    TargetCtrl.BlackSegmentText = new ColorUtils.RGB(181, 177, 174);
+    TargetCtrl.BlueSegmentText = new ColorUtils.RGB(0, 56, 85);
+    TargetCtrl.Black = new ColorUtils.RGB(0, 0, 0);
+    TargetCtrl.White = new ColorUtils.RGB(255, 255, 255);
     return TargetCtrl;
 }());
-TargetCtrl.WhiteSegment = new ColorUtils.RGB(226, 216, 217);
-TargetCtrl.BlackSegment = new ColorUtils.RGB(54, 49, 53);
-TargetCtrl.BlueSegment = new ColorUtils.RGB(68, 173, 228);
-TargetCtrl.RedSegment = new ColorUtils.RGB(231, 37, 35);
-TargetCtrl.RedSegmentText = new ColorUtils.RGB(176, 127, 113);
-TargetCtrl.GoldSegment = new ColorUtils.RGB(251, 209, 3);
-TargetCtrl.GoldSegmentText = new ColorUtils.RGB(165, 135, 11);
-TargetCtrl.WhiteSegmentText = new ColorUtils.RGB(111, 106, 103);
-TargetCtrl.BlackSegmentText = new ColorUtils.RGB(181, 177, 174);
-TargetCtrl.BlueSegmentText = new ColorUtils.RGB(0, 56, 85);
-TargetCtrl.Black = new ColorUtils.RGB(0, 0, 0);
-TargetCtrl.White = new ColorUtils.RGB(255, 255, 255);
 window.onload = function () {
     //var el = document.getElementById('content');
     //var greeter = new Greeter(el);

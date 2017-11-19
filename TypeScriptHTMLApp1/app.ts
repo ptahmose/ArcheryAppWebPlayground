@@ -50,7 +50,6 @@ interface IShotPositions {
 }
 
 class TargetCtrl implements IShotPositions {
-
     element: HTMLCanvasElement;
     canvasWidth: number;
     canvasHeight: number;
@@ -152,6 +151,16 @@ class TargetCtrl implements IShotPositions {
         this.element.onmousedown = (ev: MouseEvent) => { this.OnMouseDown(ev); };
         this.element.onmouseup = (ev: MouseEvent) => { this.OnMouseUp(ev); }
         this.element.onmousemove = (ev: MouseEvent) => { this.OnMouseMove(ev); }
+//        this.element.addEventListener("ontouchstart",(ev:TouchEvent)=>{this.OnTouchStart(ev);}, false );
+        this.element.ontouchstart=(ev:TouchEvent)=>{this.OnTouchStart(ev);}
+        this.element.ontouchmove=(ev:TouchEvent)=>{this.OnTouchMove(ev);}
+        this.element.ontouchend=(ev:TouchEvent)=>{this.OnTouchEnd(ev);}
+
+        this.element.addEventListener("contextmenu", function (e) {
+           // e.target.innerHTML = "Show a custom menu instead of the default context menu";
+            e.preventDefault();    // Disables system menu
+          }, false);
+      
     }
 
     setTransform(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, zoom: number): void {
@@ -234,6 +243,11 @@ class TargetCtrl implements IShotPositions {
     }
 
     OnMouseDown(ev: MouseEvent): void {
+        // if (ev.touches && ev.touches.length > 0) {
+
+        // }
+
+
         if (this.zoomAnimation != null) {
             this.zoomAnimation.stop();
         }
@@ -256,7 +270,32 @@ class TargetCtrl implements IShotPositions {
         this.runZoomInAnimation(ev, this.curZoom, 1);     
     }
 
+    OnTouchStart(ev: TouchEvent): any {
+        ev.preventDefault();
+        
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        //throw new Error("Method not implemented.");
+        console.log("Touch-Start"+ev.touches.length);
+        var rect = this.element.getBoundingClientRect();
+       
+        var pos={x:ev.touches[0].clientX- rect.left,y:ev.touches[0].clientY- rect.top};
+        console.log("Touch-Start"+ev.touches.length+" x="+pos.x+" y="+pos.y);
+        this.runZoomInAnimation_(pos, this.curZoom, 0.1);
+     }
+
+    OnTouchMove(ev: TouchEvent): any {
+        //throw new Error("Method not implemented.");
+        console.log("Touch-Move: "+ev.touches.length);
+        var rect = this.element.getBoundingClientRect();
+        var pos={x:ev.touches[0].clientX- rect.left,y:ev.touches[0].clientY- rect.top};
+        this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (pos.x - 1024 / 2) / 1024 + ',' + (pos.y - 1024 / 2) / 1024 + ') ');
+        ev.preventDefault();
+    }
+
     OnMouseMove(ev: MouseEvent): void {
+        ev.preventDefault();
         //console.debug(ev.x);
         //console.debug(ev.y);
         var pos = this.getMousePos(this.element, ev);
@@ -264,6 +303,14 @@ class TargetCtrl implements IShotPositions {
         //this.crosshairElement.setAttribute('transform', 'scale(1024,1024) translate(' + (ev.x-1024/2)/1024 + ',' + (ev.y-1024/2)/1024 + ') ');
         //this.crosshairElement.setAttribute('transform', ' scale(1024,1024) translate(0.5 0) ');
         //this.crosshairElement.setAttribute('transform', 'scale(1024,512) ');
+    }
+    OnTouchEnd(ev: TouchEvent): void {
+        if (this.zoomAnimation != null) {
+            this.zoomAnimation.stop();
+        }
+        ev.preventDefault();
+
+        this.runZoomInAnimation_(this.zoomCenterPos, this.curZoom, 1);     
     }
 
     private TransformToUnzoomedNormalized( pos:{ x: number, y: number }): { x: number, y: number }
@@ -290,8 +337,12 @@ class TargetCtrl implements IShotPositions {
     }
 
     private runZoomInAnimation(ev: MouseEvent, startZoom: number, endZoom: number): void {
+      this.runZoomInAnimation_(this.getMousePos(this.element, ev),startZoom,endZoom);
+    }
+
+    private runZoomInAnimation_(zoomCenter:{x:number,y:number}, startZoom: number, endZoom: number): void {
         //var pos = this.getMousePos(this.element, ev);
-        this.zoomCenterPos=this.getMousePos(this.element, ev);
+        this.zoomCenterPos=zoomCenter;//this.getMousePos(this.element, ev);
         //this.setHitGraphicsTransform(pos.x, pos.y, endZoom);
         this.zoomAnimation = $({ xyz: startZoom });
         /*$({ xyz: startZoom })*/this.zoomAnimation.animate(

@@ -10,7 +10,7 @@ var ColorUtils;
     /*
      * Object representation of RGB (red/green/blue) values for a color.
      */
-    var RGB = (function () {
+    var RGB = /** @class */ (function () {
         function RGB(r, g, b) {
             this.red = r;
             this.green = g;
@@ -22,7 +22,7 @@ var ColorUtils;
     /*
      * Object representation of HSV (hue/saturation/value) values for a color.
      */
-    var HSV = (function () {
+    var HSV = /** @class */ (function () {
         function HSV() {
         }
         return HSV;
@@ -31,7 +31,7 @@ var ColorUtils;
     /*
      * Contains methods to manipulate colors both in RGB and HSV form.
      */
-    var ColorHelper = (function () {
+    var ColorHelper = /** @class */ (function () {
         function ColorHelper() {
         }
         /*
